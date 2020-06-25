@@ -1,7 +1,9 @@
 from flask import Flask
 from apiGatewayAPI import api_gateway_api
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 app.register_blueprint(api_gateway_api)
 
