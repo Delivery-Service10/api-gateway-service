@@ -12,6 +12,7 @@ def login():
     data = request.get_json()
 
     r = requests.post('http://127.0.0.1:5001/login/', json=data)
+    # r = requests.post('http://127.0.0.1:5001/customer/', json=data)
     if r.status_code == 200:
         public_id = json.loads(r.text)[0]['public_id']
         token = encode_auth_token(public_id)
@@ -68,7 +69,8 @@ def decode_auth_token(auth_token):
 @api_gateway_api.route("/create-account/", methods=['POST'])
 def create_account():
     # Use the data variable and view it in the run instance when printed
-    data = request.get_json()
+    # data = request.get_json()
+    data = {'first_name': 'First', 'last_name': 'Last', 'email': 'udc2@gmail.com', 'password': 'random'}
     print(data)
     return make_response(jsonify(data), 200)
 
