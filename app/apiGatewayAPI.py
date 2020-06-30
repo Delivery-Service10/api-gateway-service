@@ -3,25 +3,45 @@ import json
 import jwt
 import datetime
 from flask import Blueprint, request, jsonify, make_response
+from flask_cors import cross_origin
 
 api_gateway_api = Blueprint('api_gateway_api', __name__)
 
 
+@api_gateway_api.route("/test/", methods=['POST'])
+@cross_origin(supports_credentials=True)
+def test():
+    if 'token' in request.cookies:
+        data = request.cookies.get("token")
+        print(data)
+    else:
+        print('not found')
+    return make_response(jsonify({'message':'xD'}))
+
+
 @api_gateway_api.route("/login/", methods=['POST'])
+@cross_origin(supports_credentials=True)
 def login():
     data = request.get_json()
 
     r = requests.post('http://127.0.0.1:5001/login/', json=data)
-    # r = requests.post('http://127.0.0.1:5001/customer/', json=data)
     if r.status_code == 200:
         public_id = json.loads(r.text)[0]['public_id']
+        name = json.loads(r.text)[0]['Name']
         token = encode_auth_token(public_id)
         response_obj = {
             'status': 'success',
             'message': 'Logged in successfully',
-            'auth_token': token.decode()
+            'Name': name
         }
-        return make_response(jsonify(response_obj), 200)
+        response = make_response(jsonify(response_obj))
+        response.set_cookie('token',
+                            token.decode(),
+                            httponly=True,
+                            # domain='127.0.0.1 localhost dev.localhost',
+                            # secure=True,
+                            max_age=60 * 60)
+        return response, 200
 
     else:
         response_obj = {
