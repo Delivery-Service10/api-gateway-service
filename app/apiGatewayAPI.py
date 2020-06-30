@@ -89,8 +89,19 @@ def decode_auth_token(auth_token):
 @api_gateway_api.route("/create-account/", methods=['POST'])
 def create_account():
     # Use the data variable and view it in the run instance when printed
-    # data = request.get_json()
-    data = {'first_name': 'First', 'last_name': 'Last', 'email': 'udc2@gmail.com', 'password': 'random'}
-    print(data)
-    return make_response(jsonify(data), 200)
-
+    data = request.get_json()
+    r = requests.post('http://127.0.0.1:5001/customer/', json=data)
+    if r.status_code == 200:
+        response_obj = {
+            'status': 'success',
+            'message': 'Account created in successfully'
+        }
+        response = make_response(jsonify(response_obj))
+        return response, 200
+    else:
+        response_obj = {
+            'status': 'Fail',
+            'message': 'Account not created'
+        }
+        response = make_response(jsonify(response_obj))
+        return response, 405
